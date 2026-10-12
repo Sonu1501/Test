@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Deploy and Build via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.STAGING_HOST }}
@@ -21,5 +21,6 @@ jobs:
             cd /var/www/jusbid-staging/Test
             git pull origin staging
             npm install
-            npm run build
-            pm2 restart jusbid-staging
+            NODE_OPTIONS=--openssl-legacy-provider npm run build
+            pm2 restart jussid-staging || pm2 start serve --name "jussid-staging" -- -s build -l 3001
+            pm2 save
